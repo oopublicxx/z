@@ -14,14 +14,14 @@
             line-height: 1.4;
         }
         
-        /* 讓整個主容器（包含圖片和單字）限制寬度並居中偏中 */
+        /* 讓整個主容器限制寬度並居中 */
         .main-container {
             max-width: 550px;         
             margin: 0 auto;            
             padding-left: 20px;
         }
         
-        /* 圖片導覽區域：不再全螢幕靠右，而是待在容器內靠左（與單字對齊） */
+        /* 圖片導覽區域 */
         .top-nav {
             text-align: left;        
             margin-bottom: 25px;       
@@ -33,33 +33,47 @@
             cursor: pointer;
         }
 
+        /* 核心關鍵：在這裡初始化一個 CSS 計數器 */
         .word-list {
             list-style-type: none;
             padding: 0;
             margin: 0;
-            counter-reset: word-counter; 
+            counter-reset: word-counter;
         }
+        
         .word-item {
             padding: 4px 0;
             word-wrap: break-word;
             text-align: left;
             position: relative;
-            padding-left: 85px;        /* 預留左邊空間給序號放 */
+            padding-left: 95px;        /* 保留左邊空間以容納三位數序號 */
         }
         
+        /* 核心關鍵：利用 CSS 偽元素生成三位數虛擬序號 (001., 002. 等) */
+        /* 這樣朗讀和選取工具就完全不會讀到它 */
         .word-item::before {
-            counter-increment: word-counter;
-            content: counter(word-counter, decimal-leading-zero) ".";
+            counter-increment: word-counter;            /* 計數器自增 1 */
+            content: "0" counter(word-counter, decimal-leading-zero) "."; /* 強制生成三位數 */
+            
             position: absolute;
             left: 0;
             top: 4px;
-            width: 75px;
+            width: 85px;               /* 配合序號寬度微調 */
             text-align: left;
             color: #D7CCC8;            
+            
+            /* 禁止選取 */
             user-select: none;
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
+        }
+        
+        /* 防呆機制：如果單字量超過 999 個，自動修正回正常無前置 0 的顯示方式 */
+        @supports (counter-increment: word-counter) {
+            .word-item:nth-child(n+100)::before {
+                content: counter(word-counter) ".";
+            }
         }
     </style>
 </head>
